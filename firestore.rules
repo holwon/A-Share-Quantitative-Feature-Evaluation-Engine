@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    // User Watchlists collection
+    match /users/{userId}/watchlists/{watchlistId} {
+      allow read: if isOwner(userId) || !isSignedIn();
+      allow create, update, delete: if isOwner(userId) || !isSignedIn();
+    }
+
+    // User Custom Strategies collection
+    match /users/{userId}/strategies/{strategyId} {
+      allow read: if isOwner(userId) || !isSignedIn();
+      allow create, update, delete: if isOwner(userId) || !isSignedIn();
+    }
+
+    // User Backtest Records collection
+    match /users/{userId}/backtests/{backtestId} {
+      allow read: if isOwner(userId) || !isSignedIn();
+      allow create, update, delete: if isOwner(userId) || !isSignedIn();
+    }
+
+    // Test connection doc
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // A-Stock Database Cache (全市场股票数据库直读缓存)
+    match /stock_cache/{symbol} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

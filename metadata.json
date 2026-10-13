@@ -1,0 +1,6 @@
+{
+  "name": "A股量化特征评估引擎",
+  "description": "A股股票量化特征计算、单项因子判定、结构化评分与量化特征画像评估引擎",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

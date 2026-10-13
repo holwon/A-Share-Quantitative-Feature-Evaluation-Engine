@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "UserWatchlist": {
+      "title": "UserWatchlist",
+      "description": "自选股与量化监控标的记录",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "所有者用户ID" },
+        "symbol": { "type": "string", "description": "股票代码 (如 600519.SH)" },
+        "name": { "type": "string", "description": "股票名称 (如 贵州茅台)" },
+        "industry": { "type": "string", "description": "所属行业" },
+        "addedAt": { "type": "string", "format": "date-time", "description": "添加时间" },
+        "quantScoreSnapshot": { "type": "number", "description": "添加时的量化评分快照" },
+        "notes": { "type": "string", "description": "自定义备注" }
+      },
+      "required": ["userId", "symbol", "name", "addedAt"]
+    },
+    "CustomStrategy": {
+      "title": "CustomStrategy",
+      "description": "自定义多因子权重与量化策略配置",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "所有者用户ID" },
+        "strategyName": { "type": "string", "description": "策略名称" },
+        "weights": { "type": "object", "description": "因子权重配置键值对" },
+        "description": { "type": "string", "description": "策略说明" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "创建时间" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "最后更新时间" }
+      },
+      "required": ["userId", "strategyName", "createdAt"]
+    },
+    "BacktestRecord": {
+      "title": "BacktestRecord",
+      "description": "因子与策略历史回测执行结果记录",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "所有者用户ID" },
+        "symbol": { "type": "string", "description": "股票代码" },
+        "strategyName": { "type": "string", "description": "回测策略名称" },
+        "startDate": { "type": "string", "description": "回测起始日期" },
+        "endDate": { "type": "string", "description": "回测结束日期" },
+        "totalReturn": { "type": "number", "description": "累计收益率 (%)" },
+        "annualizedReturn": { "type": "number", "description": "年化收益率 (%)" },
+        "maxDrawdown": { "type": "number", "description": "最大回撤 (%)" },
+        "sharpeRatio": { "type": "number", "description": "夏普比率" },
+        "winRate": { "type": "number", "description": "胜率 (%)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "回测时间" }
+      },
+      "required": ["userId", "symbol", "strategyName", "createdAt"]
+    },
+    "StockCacheRecord": {
+      "title": "StockCacheRecord",
+      "description": "A股全市场股票基础行情、K线与量化特征持久化缓存",
+      "type": "object",
+      "properties": {
+        "symbol": { "type": "string", "description": "股票代码 (如 600519)" },
+        "name": { "type": "string", "description": "股票名称" },
+        "industry": { "type": "string", "description": "所属行业" },
+        "price": { "type": "number", "description": "最新价格" },
+        "changePct": { "type": "number", "description": "涨跌幅 (%)" },
+        "bundleJson": { "type": "string", "description": "序列化的完整行情、K线与财务特征数据包" },
+        "cachedAt": { "type": "string", "format": "date-time", "description": "缓存写入时间" }
+      },
+      "required": ["symbol", "name", "bundleJson", "cachedAt"]
+    }
+  },
+  "firestore": {
+    "/stock_cache/{symbol}": {
+      "schema": "StockCacheRecord",
+      "description": "A股股票数据数据库直读缓存"
+    },
+    "/users/{userId}/watchlists/{watchlistId}": {
+      "schema": "UserWatchlist",
+      "description": "用户专属自选股集合"
+    },
+    "/users/{userId}/strategies/{strategyId}": {
+      "schema": "CustomStrategy",
+      "description": "用户自定义多因子选股策略集合"
+    },
+    "/users/{userId}/backtests/{backtestId}": {
+      "schema": "BacktestRecord",
+      "description": "用户历史回测记录集合"
+    }
+  }
+}
